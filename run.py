@@ -29,7 +29,7 @@ def generate_quiz(rag_from_manual):
 
     user_prompt=PromptTemplate(
         template="## Manual \n {rag_from_manual} \n" +
-                "## Question \n The above manual is for equipment used at the restaurant. Write a quiz question for a new employee to test if they understand the above content. The multiple choice question should have at least one tricky answer.\n" +
+                "## Question \n The above manual is for equipment used at the restaurant. Write a quiz question for a new employee to test if they understand the above content. The multiple choice question should have only one correct answer.\n" +
                 "## Quiz Question \n",
         input_variables=["rag_from_manual"],
     )

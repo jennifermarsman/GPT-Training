@@ -14,6 +14,8 @@ gpt4_endpoint = "https://TODO.openai.azure.com/"            # Your endpoint will
 gpt4_api_key = "TODO"                                       # Your key will look something like this: 00000000000000000000000000000000
 gpt4_deployment_name="gpt-4"
 
+question_history = ""
+
 # Create instance to call GPT-4
 gpt4 = AzureChatOpenAI(
     openai_api_base=gpt4_endpoint,
@@ -27,12 +29,22 @@ def generate_quiz(rag_from_manual):
     system_template="Your role is a trainer to help new employees learn their job working at a restaurant.  You generate a multiple-choice quiz question to train an employee, when given information from the equipment manuals and employee guidebooks.\n"
     system_message_prompt = SystemMessagePromptTemplate.from_template(system_template)
 
-    user_prompt=PromptTemplate(
-        template="## Manual \n {rag_from_manual} \n" +
-                "## Question \n The above manual is for equipment used at the restaurant. Write a quiz question for a new employee to test if they understand the above content. The multiple choice question should have only one correct answer.\n" +
-                "## Quiz Question \n",
-        input_variables=["rag_from_manual"],
-    )
+    if not question_history:
+        user_prompt=PromptTemplate(
+            template="## Manual \n {rag_from_manual} \n" +
+                    "## Instructions \n The above manual is for equipment used at the restaurant. Write a new quiz question for a new employee to test if they understand the above content. The multiple choice question should have only one correct answer.\n" +
+                    "## Quiz Question \n",
+            input_variables=["rag_from_manual"],
+        )
+    else:
+        user_prompt=PromptTemplate(
+            template="## Manual \n {rag_from_manual} \n" +
+                    "## Previous Quiz Questions \n {question_history} \n" +
+                    "## Instructions \n The above manual is for equipment used at the restaurant. Write a new quiz question for a new employee to test if they understand the above content. The new quiz question should test different content from previous quiz questions.  The multiple choice question should have only one correct answer.\n" +
+                    "## Quiz Question \n",
+            input_variables=["rag_from_manual", "question_history"],
+        )
+        
     human_message_prompt = HumanMessagePromptTemplate(prompt=user_prompt)
     chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
 
@@ -45,6 +57,7 @@ def generate_quiz(rag_from_manual):
     output = gpt4(messages)
     print("Output")
     print(output)
+    question_history += output.content + " \n"
     return output.content
 
 def evaluate_quiz(excerpt, quiz, user_answer):

@@ -80,7 +80,7 @@ with gr.Blocks(css=".gradio-label {color: red}") as demo:
 
     with gr.Row():
         with gr.Column(scale=1):
-            gr.Image(value="logo.png", show_label=False, interactive=False)
+            gr.Image(value="logo.png", show_label=False, interactive=False, show_download_button=False)
         with gr.Column(scale=9):
             gr.Markdown(value = "## Dynamic Training")
             gr.Markdown(value = "Training of new employees can be a costly endeavor.  This demonstration uses GPT-4 to generate a quiz question for a new employee, given a manual excerpt.  The employee can then answer the quiz question, and the AI will evaluate the answer and provide feedback.  This can be used to train new employees on the job, and to evaluate their understanding of the material.\n\nNote that the manual excerpt is shown here for demonstration purposes, but in a real-world application, the manual excerpt would be hidden from the employee.  You are also not limited to one short excerpt; code can iterate over a manual or group of documents and generate many questions on the material.")
